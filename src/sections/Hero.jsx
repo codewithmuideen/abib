@@ -87,7 +87,7 @@ export default function Hero() {
         {/* Desktop: the photo sits to the right and its left edge blends into navy */}
         <div
           aria-hidden="true"
-          className="absolute inset-0 -z-10 hidden bg-gradient-to-r from-navy/70 from-[20%] via-navy/25 via-[45%] to-transparent to-[60%] lg:block"
+          className="absolute inset-0 -z-10 hidden bg-gradient-to-r from-navy/70 from-[20%] via-navy/45 via-[50%] to-transparent to-[68%] lg:block"
         />
         <div
           aria-hidden="true"
