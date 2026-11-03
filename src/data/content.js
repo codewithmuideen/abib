@@ -15,12 +15,12 @@ import {
 
 const photo = (name) => `/images/photos/${name}.webp`
 
-// Hero slideshow: bright, wide photography shown under a light overlay.
-export const heroSlides = [
-  { src: photo('hero-tradesman'), alt: 'Tradesperson in protective gear working with tools on site', position: '70% center' },
-  { src: photo('team-in-home'), alt: 'Tradespeople carrying out work inside a home', position: '65% center' },
-  { src: photo('builder-frame'), alt: 'Builder working on a timber frame against a blue sky', position: '60% center' },
-]
+// Hero: bright architectural photography under a light overlay.
+export const heroImage = {
+  src: photo('hero-building'),
+  alt: 'Modern multi-storey residential building with balconies against a clear blue sky',
+  position: 'center 30%',
+}
 
 export const heroTiles = [
   {
@@ -48,7 +48,7 @@ export const images = {
   aboutHero: { src: photo('team-in-home'), alt: 'Tradespeople carrying out work inside a home' },
   contact: { src: photo('london-aerial'), alt: 'Aerial view of London and the River Thames' },
   quote: { src: photo('bright-kitchen'), alt: 'Bright white kitchen with island and mixer tap' },
-  blog: { src: photo('residential-block'), alt: 'Modern multi-storey residential building against a blue sky' },
+  blog: { src: photo('curved-building'), alt: 'Curved blue and white modern building facade against the sky', position: 'center 40%' },
   aboutTeam: { src: photo('site-team'), alt: 'Construction team in high-visibility clothing on a building site' },
   review: { src: photo('bright-office'), alt: 'Bright office with desks beside large windows' },
   cta: { src: photo('builder-frame'), alt: 'Builder working on a timber frame against a blue sky' },

@@ -94,7 +94,7 @@ export default function Footer() {
                 <Mail className="mt-0.5 h-4 w-4 shrink-0 text-sky" aria-hidden="true" />
                 <span>
                   {company.hrEmail}
-                  <span className="block text-xs text-white/45">Recruitment &amp; HR</span>
+                  <span className="block text-xs text-white/45">HR enquiries</span>
                 </span>
               </a>
               <a href={company.url} className="flex gap-3 transition-colors hover:text-white">

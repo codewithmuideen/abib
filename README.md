@@ -16,7 +16,7 @@ Corporate website and form email API for [www.abibltd.co.uk](https://www.abibltd
 | `/our-approach`      | Our Approach: four-step process infographic                  |
 | `/request-a-quote`   | Quote request form (`?service=` pre-selects a service)       |
 | `/contact`           | Contact details, form and map                                |
-| `/careers`           | Careers application form with optional CV upload             |
+| `/blog`              | Live UK industry news (plumbing, maintenance, property, building safety) |
 | `/first-week-review` | Internal HR First Week Employee Review form (not indexed)    |
 | `/privacy-policy`    | Privacy Policy                                               |
 
@@ -26,20 +26,26 @@ Corporate website and form email API for [www.abibltd.co.uk](https://www.abibltd
 | ----------------- | ----------------------------- | ------------------- |
 | Contact           | `POST /api/contact`           | `CONTACT_EMAIL`     |
 | Request a quote   | `POST /api/quote`             | `CONTACT_EMAIL`     |
-| Careers (+ CV)    | `POST /api/careers`           | `HR_EMAIL`          |
 | First week review | `POST /api/first-week-review` | `HR_EMAIL`          |
 
 Every submission is validated on the server, escaped and sent as an HTML email with a plain-text alternative.
-Contact, quote and careers emails set **Reply-To** to the sender, so staff can simply reply. The visitor only sees a
+Contact and quote emails set **Reply-To** to the sender, so staff can simply reply. The visitor only sees a
 success message after Resend has accepted the email; otherwise they see an error and the contact details.
 
 Protection built in: server-side validation and length limits, HTML escaping, a hidden honeypot field, per-form rate
-limiting (6 successful submissions per 10 minutes per IP), a 100 KB JSON body limit, and CV uploads restricted to
-PDF / DOC / DOCX up to 5 MB with file-signature checks. CVs are attached to the email and never written to disk.
+limiting (6 successful submissions per 10 minutes per IP), and a 100 KB JSON body limit.
+
+## Blog (live industry news)
+
+`GET /api/news` collects the latest headlines from Google News RSS searches on four topics that match Abib's
+services (Plumbing, Building Maintenance, Property, Building Safety). Results are cached for 30 minutes and the last
+good result is served if a refresh fails. No API key is needed and nothing is collected from readers. Each headline links
+to the original publisher. Topics and search terms live in `server/routes/news.js`. The old `/careers` URL redirects
+permanently to `/blog`.
 
 ## Getting started
 
-Requires Node.js 20.11 or newer.
+Requires Node.js 22.
 
 ```bash
 npm install
@@ -74,7 +80,21 @@ whether email is configured.
 5. Set `RESEND_FROM_EMAIL` to an address on the verified domain, e.g. `Abib Website <website@abibltd.co.uk>`.
 6. Submit each form once and confirm the emails arrive at info@ and hr@.
 
-## Production build and deployment
+## Deploying to Vercel
+
+The project is ready for Vercel as it is:
+
+- `vercel.json` routes every page to the app, adds security headers and caching, and redirects `/careers` to `/blog`.
+- The `api/` folder holds one serverless function per endpoint (`contact`, `quote`, `first-week-review`, `news`,
+  `health`), each reusing the handlers in `server/routes/`.
+- In *Project Settings > Environment Variables*, add `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `CONTACT_EMAIL` and
+  `HR_EMAIL`, then redeploy.
+
+Vercel functions do not share memory, so the in-memory rate limit and news cache only apply per function instance
+there. The honeypot and validation still apply. For stricter rate limiting on Vercel, add Vercel's firewall rules for
+`/api/*`.
+
+## Deploying to a Node.js host
 
 ```bash
 npm run build    # builds the site into dist/

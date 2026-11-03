@@ -42,7 +42,7 @@ function Connector({ from, to, delay, id }) {
         aria-hidden="true"
         viewBox="0 0 100 100"
         preserveAspectRatio="none"
-        className="absolute left-full top-0 hidden h-full w-14 overflow-visible lg:block xl:w-16"
+        className="absolute left-full top-0 hidden h-full w-16 overflow-visible lg:block xl:w-20"
       >
         <defs>
           <linearGradient id={`${id}-h`} x1="0" y1="0" x2="1" y2="1">
@@ -54,7 +54,7 @@ function Connector({ from, to, delay, id }) {
           d="M0 22 H22 L78 78 H100"
           fill="none"
           stroke={`url(#${id}-h)`}
-          strokeWidth="2.5"
+          strokeWidth="3"
           strokeLinejoin="round"
           vectorEffect="non-scaling-stroke"
           {...draw}
@@ -77,7 +77,7 @@ function Connector({ from, to, delay, id }) {
           d="M1 0 V100"
           fill="none"
           stroke={`url(#${id}-v)`}
-          strokeWidth="2.5"
+          strokeWidth="3"
           vectorEffect="non-scaling-stroke"
           {...draw}
         />
@@ -117,7 +117,7 @@ export default function Approach({ id = 'approach', heading = true }) {
           </h2>
         )}
 
-        <ol className="mx-auto mt-16 grid max-w-md gap-14 lg:mt-20 lg:max-w-none lg:grid-cols-4 lg:gap-14 xl:gap-16">
+        <ol className="mx-auto mt-16 grid max-w-md gap-14 lg:mt-20 lg:max-w-none lg:grid-cols-4 lg:gap-16 xl:gap-20">
           {approach.map((step, i) => {
             const Icon = ICONS[i]
             const [c1, c2] = GRADIENTS[i]

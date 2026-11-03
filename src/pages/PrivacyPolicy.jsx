@@ -12,8 +12,8 @@ const sections = [
     body: (
       <>
         <p>
-          This website is operated by {company.name} (“Abib”, “we”, “us”), {company.address}. For any question about this
-          policy or your personal information, contact us at{' '}
+          This website is operated by {company.name} (“Abib”, “we”, “us”), {company.address}. For any question about
+          this policy or your personal information, contact us at{' '}
           <a href={`mailto:${company.email}`}>{company.email}</a> or on <a href={company.phoneHref}>{company.phone}</a>.
         </p>
       </>
@@ -33,16 +33,13 @@ const sections = [
             project details and preferred contact method.
           </li>
           <li>
-            <strong>Careers form:</strong> your name, email address, telephone number, the position you are applying for,
-            your cover message and, if you choose to upload one, your CV.
-          </li>
-          <li>
             <strong>First Week Employee Review form</strong> (for staff): the employee and manager details, review
             answers, comments, agreed actions, dates and typed signature names entered into the form.
           </li>
         </ul>
         <p>
-          The website does not use analytics, advertising or tracking cookies, and does not ask you to create an account.
+          The website does not use analytics, advertising or tracking cookies, and does not ask you to create an
+          account.
         </p>
       </>
     ),
@@ -52,7 +49,6 @@ const sections = [
     body: (
       <ul>
         <li>To respond to enquiries and quote requests, and to discuss the work you have asked about.</li>
-        <li>To consider job applications and contact applicants about them.</li>
         <li>To keep an HR record of employee first week reviews.</li>
         <li>To protect the website from spam and misuse.</li>
       </ul>
@@ -65,8 +61,7 @@ const sections = [
         <p>
           Form submissions are not stored in a database on this website. When you submit a form, our server checks the
           information and sends it by email to the relevant Abib mailbox: general enquiries and quote requests go to{' '}
-          {company.email}; careers applications and employee reviews go to {company.hrEmail}. Uploaded CVs are attached to
-          that email and are not kept on the web server.
+          {company.email}; employee reviews go to {company.hrEmail}.
         </p>
         <p>
           Emails are delivered using Resend, a third-party email delivery service, which processes the content of the
@@ -83,20 +78,27 @@ const sections = [
   {
     title: 'Third-party content',
     body: (
-      <p>
-        The map on our contact pages is provided by Google Maps and is only loaded if you choose “Show map”. When loaded,
-        Google may receive information such as your IP address and set its own cookies, in line with Google’s privacy
-        policy. Links to “Get directions” open Google Maps in a new tab.
-      </p>
+      <>
+        <p>
+          The map on our contact pages is provided by Google Maps and is only loaded if you choose “Show map”. When
+          loaded, Google may receive information such as your IP address and set its own cookies, in line with Google’s
+          privacy policy. Links to “Get directions” open Google Maps in a new tab.
+        </p>
+        <p>
+          Headlines on our blog are collected by our server from Google News and shown with their original publisher.
+          Your browser does not contact Google to display them. Selecting a headline opens the publisher’s website in a
+          new tab, where that publisher’s own privacy policy applies.
+        </p>
+      </>
     ),
   },
   {
     title: 'How long we keep information',
     body: (
       <p>
-        We keep enquiry, application and HR emails only for as long as they are needed for the purpose they were sent
-        for, and for any related legal, contractual or record-keeping requirements. When information is no longer
-        needed, it is deleted.
+        We keep enquiry and HR emails only for as long as they are needed for the purpose they were sent for, and for
+        any related legal, contractual or record-keeping requirements. When information is no longer needed, it is
+        deleted.
       </p>
     ),
   },
@@ -105,9 +107,9 @@ const sections = [
     body: (
       <>
         <p>
-          Under UK data protection law you may have the right to ask for a copy of the personal information we hold about
-          you, to ask us to correct or delete it, to object to or restrict how we use it, and to ask us to transfer it. To
-          make a request, contact us using the details above.
+          Under UK data protection law you may have the right to ask for a copy of the personal information we hold
+          about you, to ask us to correct or delete it, to object to or restrict how we use it, and to ask us to
+          transfer it. To make a request, contact us using the details above.
         </p>
         <p>
           If you are unhappy with how we have handled your information, you can complain to the Information
@@ -122,7 +124,11 @@ const sections = [
   },
   {
     title: 'Changes to this policy',
-    body: <p>We may update this policy from time to time. The date at the top of the page shows when it was last changed.</p>,
+    body: (
+      <p>
+        We may update this policy from time to time. The date at the top of the page shows when it was last changed.
+      </p>
+    ),
   },
 ]
 
@@ -150,7 +156,10 @@ export default function PrivacyPolicy() {
                 <ol className="space-y-2 border-l border-line">
                   {sections.map((s, i) => (
                     <li key={s.title}>
-                      <a href={`#policy-${i + 1}`} className="-ml-px block border-l-2 border-transparent pl-4 text-sm text-muted transition-colors hover:border-royal hover:text-navy">
+                      <a
+                        href={`#policy-${i + 1}`}
+                        className="-ml-px block border-l-2 border-transparent pl-4 text-sm text-muted transition-colors hover:border-royal hover:text-navy"
+                      >
                         {s.title}
                       </a>
                     </li>

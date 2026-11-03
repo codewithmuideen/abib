@@ -64,7 +64,7 @@ export default function PageHero({ eyebrow, title, intro, image, crumb, children
         </motion.p>
         <SplitText
           lines={title}
-          className="mt-5 max-w-4xl font-display text-[2.3rem] font-extrabold uppercase leading-[1.05] tracking-[-0.02em] [text-shadow:0_2px_30px_rgb(9_26_49/0.35)] min-[400px]:text-[2.6rem] sm:text-5xl lg:text-6xl xl:text-[4.25rem]"
+          className="mt-5 max-w-4xl font-display text-[2.3rem] font-extrabold uppercase leading-[1.05] tracking-[-0.02em] min-[400px]:text-[2.6rem] sm:text-5xl lg:text-6xl xl:text-[4.25rem]"
           delay={0.15}
         />
         {intro && (

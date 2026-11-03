@@ -13,7 +13,7 @@ const items = [
   },
   { icon: Phone, label: 'Telephone', value: company.phone, href: company.phoneHref, strong: true },
   { icon: Mail, label: 'General enquiries', value: company.email, href: `mailto:${company.email}` },
-  { icon: Users, label: 'HR & recruitment', value: company.hrEmail, href: `mailto:${company.hrEmail}` },
+  { icon: Users, label: 'HR enquiries', value: company.hrEmail, href: `mailto:${company.hrEmail}` },
   { icon: Globe, label: 'Website', value: company.website, href: company.url },
 ]
 

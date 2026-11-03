@@ -40,6 +40,6 @@
   },
   "description": "Website and email API for Abib Plumbing & Building Management Ltd",
   "engines": {
-    "node": ">=20.11"
+    "node": "22.x"
   }
 }

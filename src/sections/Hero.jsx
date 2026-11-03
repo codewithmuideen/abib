@@ -1,12 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import { ArrowRight, Building2, Droplets, Phone } from 'lucide-react'
 import { company } from '../../shared/company'
-import { heroSlides, heroTiles } from '../data/content'
+import { heroImage, heroTiles } from '../data/content'
 import { EASE } from '../lib/motion'
-
-const SLIDE_MS = 6500
 
 const appear = (delay) => ({
   initial: { opacity: 0, y: 28 },
@@ -16,25 +14,32 @@ const appear = (delay) => ({
 
 const LINES = [
   [{ w: 'Building' }, { w: 'Better' }, { w: 'Spaces.' }],
-  [{ w: 'Delivering' }, { w: 'Reliable', accent: true }, { w: 'Solutions.', accent: true }],
+  [{ w: 'Delivering' }],
+  [
+    { w: 'Reliable', accent: true },
+    { w: 'Solutions.', accent: true },
+  ],
 ]
 
+// Word order across all lines, used to stagger the reveal.
+const WORDS = LINES.flatMap((line, l) => line.map((word, w) => ({ ...word, key: `${l}-${w}` })))
+const delayOf = (key) => 0.3 + WORDS.findIndex((w) => w.key === key) * 0.07
+
 function Headline() {
-  let i = 0
   return (
     <h1
       aria-label="Building Better Spaces. Delivering Reliable Solutions."
-      className="mt-6 font-display text-[2.4rem] font-extrabold uppercase leading-[1.04] tracking-[-0.02em] [text-shadow:0_2px_30px_rgb(9_26_49/0.35)] min-[400px]:text-[2.7rem] sm:text-6xl lg:text-[4.3rem] xl:text-[4.9rem]"
+      className="mt-6 font-display text-[2.3rem] font-extrabold uppercase leading-[1.04] tracking-[-0.02em] min-[400px]:text-[2.6rem] sm:text-[3.4rem] lg:text-[3.6rem] xl:text-[4rem]"
     >
       {LINES.map((line, l) => (
         <span key={l} aria-hidden="true" className="block">
-          {line.map(({ w, accent }) => (
+          {line.map(({ w, accent }, i) => (
             <span key={w} className="-mb-[0.12em] inline-block overflow-hidden pb-[0.12em] align-bottom">
               <motion.span
                 className={`inline-block ${accent ? 'text-sky' : ''}`}
                 initial={{ y: '110%' }}
                 animate={{ y: '0%' }}
-                transition={{ duration: 1, ease: EASE, delay: 0.3 + i++ * 0.07 }}
+                transition={{ duration: 1, ease: EASE, delay: delayOf(`${l}-${i}`) }}
               >
                 {w}&nbsp;
               </motion.span>
@@ -48,19 +53,8 @@ function Headline() {
 
 export default function Hero() {
   const ref = useRef(null)
-  const reduce = useReducedMotion()
-  const [index, setIndex] = useState(0)
-  const [paused, setPaused] = useState(false)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
   const imageY = useTransform(scrollYProgress, [0, 1], ['0%', '16%'])
-
-  useEffect(() => {
-    if (reduce || paused) return
-    const id = setTimeout(() => setIndex((i) => (i + 1) % heroSlides.length), SLIDE_MS)
-    return () => clearTimeout(id)
-  }, [index, reduce, paused])
-
-  const slide = heroSlides[index]
 
   return (
     <>
@@ -68,33 +62,32 @@ export default function Hero() {
         ref={ref}
         className="relative isolate flex min-h-[660px] items-center overflow-hidden bg-navy text-white sm:min-h-[720px] lg:min-h-[100svh]"
         aria-label="Introduction"
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
       >
-        {/* Cross-fading photography with a slow zoom */}
-        <motion.div className="absolute inset-0 -z-20" style={{ y: imageY }}>
-          <AnimatePresence initial={false}>
-            <motion.img
-              key={slide.src}
-              src={slide.src}
-              alt={slide.alt}
-              fetchPriority={index === 0 ? 'high' : undefined}
-              className="absolute inset-0 h-[116%] w-full object-cover"
-              style={{ objectPosition: slide.position ?? 'center' }}
-              initial={{ opacity: 0, scale: 1.1 }}
-              animate={{
-                opacity: 1,
-                scale: 1.02,
-                transition: { opacity: { duration: 1.4 }, scale: { duration: 8, ease: 'linear' } },
-              }}
-              exit={{ opacity: 0, transition: { duration: 1.4 } }}
-            />
-          </AnimatePresence>
+        {/* Photography with a slow settle and gentle scroll parallax */}
+        <motion.div
+          className="absolute inset-0 -z-20 lg:left-[26%] lg:[mask-image:linear-gradient(to_right,transparent,black_28%)]"
+          style={{ y: imageY }}
+        >
+          <motion.img
+            src={heroImage.src}
+            alt={heroImage.alt}
+            fetchPriority="high"
+            className="absolute inset-0 h-[116%] w-full object-cover"
+            style={{ objectPosition: heroImage.position }}
+            initial={{ scale: 1.15 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 2.4, ease: EASE }}
+          />
         </motion.div>
         {/* Light overlay: just enough for legible text, the photo stays vivid */}
         <div
           aria-hidden="true"
-          className="absolute inset-0 -z-10 bg-gradient-to-r from-navy/80 via-navy/40 to-transparent"
+          className="absolute inset-0 -z-10 bg-gradient-to-r from-navy/75 via-navy/35 to-transparent lg:hidden"
+        />
+        {/* Desktop: the photo sits to the right and its left edge blends into navy */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 -z-10 hidden bg-gradient-to-r from-navy/70 from-[20%] via-navy/25 via-[45%] to-transparent to-[60%] lg:block"
         />
         <div
           aria-hidden="true"
@@ -103,7 +96,7 @@ export default function Hero() {
         <div aria-hidden="true" className="absolute inset-0 -z-10 bg-navy/20 lg:hidden" />
 
         <div className="container pb-24 pt-[calc(var(--nav-h)+3rem)] lg:pb-28 lg:pt-[calc(var(--nav-h)+2rem)]">
-          <div className="max-w-3xl">
+          <div className="max-w-[960px]">
             <motion.p
               className="flex items-center gap-3 font-display text-sm font-semibold text-white/95 sm:text-base"
               {...appear(0.15)}
@@ -114,12 +107,12 @@ export default function Hero() {
 
             <Headline />
 
-            <motion.p className="mt-7 max-w-xl text-lg leading-relaxed text-white/90 sm:text-xl" {...appear(0.9)}>
+            <motion.p className="mt-6 max-w-xl text-lg leading-relaxed text-white/90 sm:text-xl" {...appear(0.9)}>
               Professional plumbing and building management solutions designed to keep properties operating safely,
               efficiently and reliably.
             </motion.p>
 
-            <motion.div className="mt-10 flex flex-col gap-3 sm:flex-row" {...appear(1.05)}>
+            <motion.div className="mt-9 flex flex-col gap-3 sm:flex-row" {...appear(1.05)}>
               <Link
                 to="/request-a-quote"
                 className="group inline-flex h-14 items-center justify-center gap-3 whitespace-nowrap bg-sky px-8 font-display text-[0.8rem] font-bold uppercase tracking-[0.14em] text-navy transition-colors duration-300 hover:bg-white"
@@ -138,7 +131,7 @@ export default function Hero() {
               </Link>
             </motion.div>
 
-            <motion.a href={company.phoneHref} className="group mt-10 inline-flex items-center gap-4" {...appear(1.2)}>
+            <motion.a href={company.phoneHref} className="group mt-9 inline-flex items-center gap-4" {...appear(1.2)}>
               <span className="relative grid h-12 w-12 place-items-center rounded-full bg-white/15 backdrop-blur">
                 <span
                   aria-hidden="true"
@@ -156,20 +149,6 @@ export default function Hero() {
               </span>
             </motion.a>
           </div>
-        </div>
-
-        {/* Slide controls */}
-        <div className="absolute inset-x-0 bottom-8 flex justify-center gap-2.5">
-          {heroSlides.map((s, i) => (
-            <button
-              key={s.src}
-              type="button"
-              onClick={() => setIndex(i)}
-              aria-label={`Show photo ${i + 1} of ${heroSlides.length}`}
-              aria-current={i === index ? 'true' : undefined}
-              className={`h-2.5 rounded-full transition-all duration-500 ${i === index ? 'w-8 bg-sky' : 'w-2.5 bg-white/60 hover:bg-white'}`}
-            />
-          ))}
         </div>
       </section>
 
