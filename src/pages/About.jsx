@@ -86,8 +86,8 @@ export default function About() {
         </div>
       </section>
 
-      <WhyChoose />
       <Approach id="about-approach" />
+      <WhyChoose />
       <CtaBand />
     </>
   )

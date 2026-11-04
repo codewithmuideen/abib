@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import { flushSync } from 'react-dom'
 import { FormProvider, useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ClipboardList, Lock, Printer, RotateCcw } from 'lucide-react'
+import { ClipboardList, LoaderCircle, Lock, Mail, Printer, ShieldAlert } from 'lucide-react'
 import { company } from '../../shared/company'
 import {
   DEPARTMENTS,
@@ -13,9 +14,9 @@ import {
   YES_NO,
   reviewSchema,
 } from '../../shared/schemas'
-import { todayISO } from '../lib/format'
+import { formatDate, todayISO } from '../lib/format'
 import useFormSubmit from '../hooks/useFormSubmit'
-import { submitFirstWeekReview } from '../services/api'
+import { fetchReviewInvite, submitFirstWeekReview } from '../services/api'
 import Button from '../components/Button'
 import {
   CheckboxField,
@@ -33,8 +34,8 @@ import ActionsEditor from '../components/review/ActionsEditor'
 import PrintableReview from '../components/review/PrintableReview'
 import ReviewSection from '../components/review/ReviewSection'
 
-const makeDefaults = () => ({
-  employeeName: '',
+const makeDefaults = (employeeName = '') => ({
+  employeeName,
   jobTitle: '',
   department: '',
   startDate: '',
@@ -180,17 +181,12 @@ function ProgressSidebar({ status }) {
   )
 }
 
-export default function FirstWeekReview() {
-  const defaults = useMemo(() => makeDefaults(), [])
+function ReviewForm({ invite, token }) {
+  const defaults = useMemo(() => makeDefaults(invite.employeeName), [invite.employeeName])
+  const submitWithInvite = useCallback((values) => submitFirstWeekReview({ ...values, inviteToken: token }), [token])
   const form = useForm({ resolver: zodResolver(reviewSchema), defaultValues: defaults, mode: 'onTouched' })
-  const { control, setValue, getValues, reset: resetForm, formState } = form
-  const {
-    status,
-    message,
-    submitting,
-    submit,
-    reset: resetStatus,
-  } = useFormSubmit(submitFirstWeekReview, form.setError)
+  const { control, setValue, getValues, formState } = form
+  const { status, message, submitting, submit, reset: resetStatus } = useFormSubmit(submitWithInvite, form.setError)
 
   const [submitted, setSubmitted] = useState(null)
   const [printData, setPrintData] = useState(null)
@@ -242,13 +238,6 @@ export default function FirstWeekReview() {
     }
   }
 
-  const startNew = () => {
-    resetForm(makeDefaults())
-    setSubmitted(null)
-    resetStatus()
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
   const onInvalid = () => {
     resetStatus()
   }
@@ -257,13 +246,6 @@ export default function FirstWeekReview() {
 
   return (
     <>
-      <Seo
-        title="First Week Employee Review"
-        path="/first-week-review"
-        description="Internal HR form for completing first week employee reviews at Abib Plumbing & Building Management Ltd."
-        noindex
-      />
-
       <div className="print:hidden">
         <section className="px-2 pt-2 sm:px-3 sm:pt-3">
           <div className="relative overflow-hidden rounded-[28px] bg-gradient-to-b from-[#D5E2EF] via-[#E6EEF6] to-[#F4F8FC] sm:rounded-[36px]">
@@ -289,8 +271,8 @@ export default function FirstWeekReview() {
               <dl className="mt-10 grid gap-px overflow-hidden rounded-2xl border border-white bg-line text-sm shadow-card sm:grid-cols-3">
                 {[
                   ['Submitted to', company.hrEmail],
-                  ['Sections', '10'],
-                  ['Required fields', 'Marked with *'],
+                  ['Prepared for', invite.employeeName],
+                  ['Link expires', formatDate(invite.expiresAt.slice(0, 10))],
                 ].map(([k, v]) => (
                   <div key={k} className="bg-paper/90 px-5 py-4">
                     <dt className="text-xs uppercase tracking-[0.16em] text-muted">{k}</dt>
@@ -312,9 +294,6 @@ export default function FirstWeekReview() {
                 >
                   <Button icon={Printer} onClick={print}>
                     Print submitted review
-                  </Button>
-                  <Button variant="outline" icon={RotateCcw} onClick={startNew}>
-                    Start a new review
                   </Button>
                 </SuccessPanel>
               </div>
@@ -341,7 +320,14 @@ export default function FirstWeekReview() {
 
                     <ReviewSection number={1} title="Employee details" status={progress.done[1] && 'done'}>
                       <div className="grid gap-6 sm:grid-cols-2">
-                        <TextField name="employeeName" label="Employee name" required autoComplete="off" />
+                        <TextField
+                          name="employeeName"
+                          label="Employee name"
+                          hint="Set by your personal review link."
+                          required
+                          readOnly
+                          className="[&_input]:bg-mist [&_input]:text-navy"
+                        />
                         <TextField name="jobTitle" label="Job title" required autoComplete="off" />
                       </div>
                       <RadioGroup
@@ -569,6 +555,77 @@ export default function FirstWeekReview() {
       </div>
 
       <PrintableReview data={printData} submitted={Boolean(submitted)} />
+    </>
+  )
+}
+
+function AccessScreen({ status, message }) {
+  const loading = status === 'loading'
+  return (
+    <section className="px-2 pt-2 sm:px-3 sm:pt-3">
+      <div className="relative flex min-h-[78svh] items-center overflow-hidden rounded-[28px] bg-gradient-to-b from-[#D5E2EF] via-[#E6EEF6] to-[#F4F8FC] sm:rounded-[36px]">
+        <div className="container pb-16 pt-[calc(var(--nav-h)+3rem)]">
+          <div className="mx-auto max-w-xl rounded-3xl border border-white bg-paper/90 p-8 text-center shadow-card backdrop-blur sm:p-12">
+            <span className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-royal/10 text-royal">
+              {loading ? (
+                <LoaderCircle className="h-7 w-7 animate-spin" aria-hidden="true" />
+              ) : (
+                <ShieldAlert className="h-7 w-7" aria-hidden="true" />
+              )}
+            </span>
+            <h1 className="mt-6 font-display text-2xl font-extrabold tracking-tight text-navy sm:text-3xl">
+              {loading ? 'Checking your review link…' : 'Personal review link required'}
+            </h1>
+            {!loading && (
+              <>
+                <p className="mt-4 leading-relaxed text-muted">
+                  {message ||
+                    'The First Week Employee Review form can only be opened from the personal link sent to you by HR.'}
+                </p>
+                <a
+                  href={`mailto:${company.hrEmail}?subject=${encodeURIComponent('First week review link')}`}
+                  className="mt-8 inline-flex items-center gap-2 rounded-xl bg-royal px-5 py-3 font-semibold text-white transition-colors hover:bg-navy"
+                >
+                  <Mail className="h-4 w-4" aria-hidden="true" /> Contact HR
+                </a>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/** Opens the review only for a valid personal link: /review/:token */
+export default function FirstWeekReview() {
+  const { token } = useParams()
+  const [state, setState] = useState(() => (token ? { status: 'loading' } : { status: 'invalid' }))
+
+  useEffect(() => {
+    if (!token) return
+    let cancelled = false
+    fetchReviewInvite(token)
+      .then((invite) => !cancelled && setState({ status: 'valid', invite }))
+      .catch((error) => !cancelled && setState({ status: 'invalid', message: error.message }))
+    return () => {
+      cancelled = true
+    }
+  }, [token])
+
+  return (
+    <>
+      <Seo
+        title="First Week Employee Review"
+        path="/first-week-review"
+        description="Private HR form for first week employee reviews at Abib Plumbing & Building Management Ltd."
+        noindex
+      />
+      {state.status === 'valid' ? (
+        <ReviewForm invite={state.invite} token={token} />
+      ) : (
+        <AccessScreen status={state.status} message={state.message} />
+      )}
     </>
   )
 }

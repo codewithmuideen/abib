@@ -57,7 +57,7 @@ export default function OurApproach() {
         </div>
       </section>
 
-      <WhyChoose />
+      <WhyChoose tone="mist" />
       <CtaBand />
     </>
   )

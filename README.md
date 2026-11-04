@@ -17,7 +17,8 @@ Corporate website and form email API for [www.abibltd.co.uk](https://www.abibltd
 | `/request-a-quote`   | Quote request form (`?service=` pre-selects a service)       |
 | `/contact`           | Contact details, form and map                                |
 | `/blog`              | Live UK industry news (plumbing, maintenance, property, building safety) |
-| `/first-week-review` | Internal HR First Week Employee Review form (not indexed)    |
+| `/review/:token`     | First Week Employee Review form, opened only from a personal link (not indexed) |
+| `/review-links`      | Private HR page for creating personal review links (admin password) |
 | `/privacy-policy`    | Privacy Policy                                               |
 
 ## Forms and where they are sent
@@ -34,6 +35,19 @@ success message after Resend has accepted the email; otherwise they see an error
 
 Protection built in: server-side validation and length limits, HTML escaping, a hidden honeypot field, per-form rate
 limiting (6 successful submissions per 10 minutes per IP), and a 100 KB JSON body limit.
+
+## Private First Week Review links
+
+The review form is not public. HR creates a personal link for each employee at `/review-links` (not linked
+anywhere on the site) using `ADMIN_PASSWORD`. Each link:
+
+- is signed with `REVIEW_LINK_SECRET`, so it cannot be guessed, edited or forged;
+- is tied to one employee name, which is locked on the form and used in the HR email;
+- expires after 7, 14, 30, 60 or 90 days.
+
+The server rejects any review submitted without a valid link, and `/first-week-review` on its own only shows a
+"personal link required" message. Changing `REVIEW_LINK_SECRET` cancels every link already sent.
+Links are not single-use: anyone the employee forwards their link to could open it until it expires.
 
 ## Blog (live industry news)
 
@@ -64,6 +78,9 @@ Open http://localhost:5173.
 | `CONTACT_EMAIL`     | No       | Defaults to `info@abibltd.co.uk`                                            |
 | `HR_EMAIL`          | No       | Defaults to `hr@abibltd.co.uk`                                              |
 | `PORT`              | No       | Defaults to `3001`                                                          |
+| `REVIEW_LINK_SECRET`| Yes      | Secret (32+ characters) that signs personal review links                    |
+| `ADMIN_PASSWORD`    | Yes      | Password for `/review-links` (10+ characters)                               |
+| `SITE_URL`          | No       | Base URL for generated links, e.g. `https://www.abibltd.co.uk`              |
 | `TRUST_PROXY`       | No       | Number of reverse proxies in front of Node (usually `1` in production)      |
 
 Without `RESEND_API_KEY` and `RESEND_FROM_EMAIL` the site still runs, but forms return **503** with a message asking the
@@ -85,10 +102,10 @@ whether email is configured.
 The project is ready for Vercel as it is:
 
 - `vercel.json` routes every page to the app, adds security headers and caching, and redirects `/careers` to `/blog`.
-- The `api/` folder holds one serverless function per endpoint (`contact`, `quote`, `first-week-review`, `news`,
-  `health`), each reusing the handlers in `server/routes/`.
-- In *Project Settings > Environment Variables*, add `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `CONTACT_EMAIL` and
-  `HR_EMAIL`, then redeploy.
+- The `api/` folder holds one serverless function per endpoint (`contact`, `quote`, `first-week-review`, `review-invite`,
+  `review-links`, `news`, `health`), each reusing the handlers in `server/routes/`.
+- In *Project Settings > Environment Variables*, add `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `CONTACT_EMAIL`,
+  `HR_EMAIL`, `REVIEW_LINK_SECRET` and `ADMIN_PASSWORD`, then redeploy.
 
 Vercel functions do not share memory, so the in-memory rate limit and news cache only apply per function instance
 there. The honeypot and validation still apply. For stricter rate limiting on Vercel, add Vercel's firewall rules for

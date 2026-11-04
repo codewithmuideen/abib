@@ -41,5 +41,8 @@ const postJson = (path, body) =>
 export const submitContact = (values) => postJson('/api/contact', values)
 export const submitQuote = (values) => postJson('/api/quote', values)
 export const submitFirstWeekReview = (values) => postJson('/api/first-week-review', values)
+export const fetchReviewInvite = (token) =>
+  request(`/api/review-invite?token=${encodeURIComponent(token)}`, { method: 'GET' })
+export const createReviewLink = (values) => postJson('/api/review-links', values)
 
 export const fetchNews = () => request('/api/news', { method: 'GET' })

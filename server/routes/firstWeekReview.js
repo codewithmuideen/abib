@@ -1,19 +1,20 @@
 import { ONBOARDING_ITEMS, PERFORMANCE_QUESTIONS, reviewSchema } from '../../shared/schemas.js'
 import { formatDate, renderEmail } from '../lib/emailTemplate.js'
 import { formHandler } from '../lib/formHandler.js'
+import { isInviteConfigured, verifyInvite } from '../lib/reviewInvite.js'
 
 const yesNo = (v) => (v ? 'Yes' : 'No')
 
-export const handleFirstWeekReview = formHandler({
+const sendReview = formHandler({
   name: 'first-week-review',
   schema: reviewSchema,
   successMessage: 'The first week review has been submitted to HR.',
-  buildEmail: (d) => ({
+  buildEmail: (d, req) => ({
     to: process.env.HR_EMAIL || 'hr@abibltd.co.uk',
     subject: `New First Week Employee Review – ${d.employeeName}`,
     ...renderEmail({
       title: 'First Week Employee Review',
-      intro: `Completed first week review for ${d.employeeName}, reviewed on ${formatDate(d.reviewDate)}.`,
+      intro: `Completed first week review for ${d.employeeName}, reviewed on ${formatDate(d.reviewDate)}. Submitted through personal review link ${req.invite.id}.`,
       sections: [
         {
           heading: '1. Employee details',
@@ -91,3 +92,20 @@ export const handleFirstWeekReview = formHandler({
     }),
   }),
 })
+
+/** Only accepts reviews sent from a valid personal link; the employee name always comes from the link. */
+export function handleFirstWeekReview(req, res) {
+  if (!isInviteConfigured()) {
+    return res.status(503).json({ message: 'Review links are not set up yet. Please contact HR.' })
+  }
+  const invite = verifyInvite(req.body?.inviteToken)
+  if (!invite)
+    return res
+      .status(403)
+      .json({ message: 'This review link is invalid or has expired. Please ask HR for a new link.' })
+  req.invite = invite
+  req.body = { ...req.body, employeeName: invite.employeeName }
+  return sendReview(req, res)
+}
+handleFirstWeekReview.schema = sendReview.schema
+handleFirstWeekReview.buildEmail = sendReview.buildEmail

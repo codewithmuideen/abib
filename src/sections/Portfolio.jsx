@@ -4,7 +4,7 @@ import { Reveal, RevealGroup, RevealItem } from '../components/Reveal'
 
 export default function Portfolio() {
   return (
-    <section className="section bg-mist" aria-labelledby="work-heading">
+    <section className="section bg-paper" aria-labelledby="work-heading">
       <div className="container">
         <div className="grid gap-6 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-7">

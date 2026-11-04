@@ -9,6 +9,7 @@ import { isEmailConfigured } from './services/emailService.js'
 import { handleContactForm } from './routes/contact.js'
 import { handleQuoteForm } from './routes/quote.js'
 import { handleNews } from './routes/news.js'
+import { handleCreateReviewLink, handleReviewInvite } from './routes/reviewInvites.js'
 import { handleFirstWeekReview } from './routes/firstWeekReview.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -25,6 +26,7 @@ const APP_ROUTES = new Set([
   '/request-a-quote',
   '/blog',
   '/first-week-review',
+  '/review-links',
   '/privacy-policy',
 ])
 
@@ -67,6 +69,8 @@ api.get('/health', (req, res) => res.json({ ok: true, email: isEmailConfigured()
 api.post('/contact', formLimiter(), handleContactForm)
 api.post('/quote', formLimiter(), handleQuoteForm)
 api.get('/news', handleNews)
+api.get('/review-invite', handleReviewInvite)
+api.post('/review-links', handleCreateReviewLink)
 api.post('/first-week-review', formLimiter(), handleFirstWeekReview)
 api.use(json(404, 'Not found.'))
 // eslint-disable-next-line no-unused-vars
@@ -88,7 +92,8 @@ if (fs.existsSync(path.join(CLIENT_BUILD, 'index.html'))) {
     if (req.method !== 'GET' && req.method !== 'HEAD') return next()
     const route = req.path.length > 1 ? req.path.replace(/\/+$/, '') : req.path
     res.setHeader('Cache-Control', 'no-cache')
-    res.status(APP_ROUTES.has(route) ? 200 : 404).sendFile(path.join(CLIENT_BUILD, 'index.html'))
+    const known = APP_ROUTES.has(route) || route.startsWith('/review/')
+    res.status(known ? 200 : 404).sendFile(path.join(CLIENT_BUILD, 'index.html'))
   })
 }
 

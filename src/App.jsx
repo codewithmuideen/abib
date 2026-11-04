@@ -15,6 +15,7 @@ const pages = {
   RequestQuote: () => import('./pages/RequestQuote'),
   Blog: () => import('./pages/Blog'),
   FirstWeekReview: () => import('./pages/FirstWeekReview'),
+  ReviewLinks: () => import('./pages/ReviewLinks'),
   PrivacyPolicy: () => import('./pages/PrivacyPolicy'),
   NotFound: () => import('./pages/NotFound'),
 }
@@ -25,6 +26,7 @@ const Contact = lazy(pages.Contact)
 const RequestQuote = lazy(pages.RequestQuote)
 const Blog = lazy(pages.Blog)
 const FirstWeekReview = lazy(pages.FirstWeekReview)
+const ReviewLinks = lazy(pages.ReviewLinks)
 const PrivacyPolicy = lazy(pages.PrivacyPolicy)
 const NotFound = lazy(pages.NotFound)
 
@@ -94,6 +96,8 @@ function Layout() {
               <Route path="/blog" element={<Blog />} />
               <Route path="/careers" element={<Navigate to="/blog" replace />} />
               <Route path="/first-week-review" element={<FirstWeekReview />} />
+              <Route path="/review/:token" element={<FirstWeekReview />} />
+              <Route path="/review-links" element={<ReviewLinks />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

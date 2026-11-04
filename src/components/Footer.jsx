@@ -19,7 +19,10 @@ export default function Footer() {
 
   return (
     <footer className="relative overflow-hidden bg-navy-deep text-white/70 print:hidden">
-      <div aria-hidden="true" className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-sky/60 to-transparent" />
+      <div
+        aria-hidden="true"
+        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-sky/60 to-transparent"
+      />
 
       <div className="container grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-12 lg:gap-10 lg:py-24">
         <div className="sm:col-span-2 lg:col-span-4">
@@ -71,7 +74,12 @@ export default function Footer() {
         <div className="sm:col-span-2 lg:col-span-3">
           <Column title="Contact">
             <address className="space-y-4 not-italic">
-              <a href={maps.search} target="_blank" rel="noopener noreferrer" className="flex gap-3 transition-colors hover:text-white">
+              <a
+                href={maps.search}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex gap-3 transition-colors hover:text-white"
+              >
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-sky" aria-hidden="true" />
                 <span>
                   {company.addressLines.slice(0, 2).join(', ')},
@@ -114,9 +122,6 @@ export default function Footer() {
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
             <Link to="/privacy-policy" className="link-draw hover:text-white">
               Privacy Policy
-            </Link>
-            <Link to="/first-week-review" className="link-draw hover:text-white">
-              Staff: First Week Review
             </Link>
             <button
               type="button"

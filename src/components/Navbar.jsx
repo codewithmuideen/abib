@@ -205,7 +205,7 @@ export default function Navbar() {
                     <Link
                       to={link.to}
                       aria-current={active ? 'page' : undefined}
-                      className={`relative flex items-center px-3.5 font-display text-[0.74rem] font-bold uppercase tracking-[0.1em] transition-colors duration-300 xl:px-5 xl:text-[0.78rem] ${
+                      className={`relative flex items-center whitespace-nowrap px-3 font-display text-[0.72rem] font-bold uppercase tracking-[0.08em] transition-colors duration-300 xl:px-5 xl:text-[0.78rem] xl:tracking-[0.1em] ${
                         active ? 'text-navy' : 'text-white hover:bg-white/10'
                       }`}
                     >
@@ -227,7 +227,7 @@ export default function Navbar() {
               <a
                 href={company.phoneHref}
                 aria-label={`Call us on ${company.phone}`}
-                className="flex items-center gap-2.5 px-3 text-navy transition-colors hover:text-royal sm:px-4 lg:text-white lg:hover:bg-white/10 lg:hover:text-white"
+                className="flex items-center gap-2.5 px-3 text-navy transition-colors hover:text-royal sm:px-4 lg:hidden"
               >
                 <span className="grid h-10 w-10 place-items-center rounded-full bg-royal/10 text-royal lg:h-auto lg:w-auto lg:bg-transparent lg:text-sky">
                   <Phone className="h-4 w-4" aria-hidden="true" />
@@ -238,7 +238,7 @@ export default function Navbar() {
               </a>
               <Link
                 to="/request-a-quote"
-                className="group hidden items-center gap-3 bg-sky px-5 font-display text-[0.74rem] font-bold uppercase tracking-[0.12em] text-navy transition-colors duration-300 hover:bg-navy hover:text-white md:flex xl:px-7"
+                className="group hidden items-center gap-3 whitespace-nowrap bg-sky px-5 font-display text-[0.74rem] font-bold uppercase tracking-[0.12em] text-navy transition-colors duration-300 hover:bg-navy hover:text-white md:flex xl:px-8"
               >
                 Request a quote
                 <ArrowRight

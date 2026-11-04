@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /first-week-review
+Disallow: /review/
 Disallow: /api/
 
 Sitemap: https://www.abibltd.co.uk/sitemap.xml
